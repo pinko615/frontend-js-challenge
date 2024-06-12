@@ -11,12 +11,14 @@ import { TrendService } from './trend.service';
 import { TrendsListComponent } from './trends-list/trends-list.component';
 import { trendsEffects } from './store/effects';
 import { trendsFeatureKey, trendsReducer } from './store/reducers';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   declarations: [TrendsListComponent, TrendDetailComponent],
   imports: [
     CommonModule,
     AppTrendsRoutingModule,
+    ComponentsModule,
     HttpClientModule,
     StoreModule.forFeature(trendsFeatureKey, trendsReducer),
     EffectsModule.forFeature(trendsEffects),
@@ -31,4 +33,4 @@ import { trendsFeatureKey, trendsReducer } from './store/reducers';
     },
   ],
 })
-export class AppTrendsModule {}
+export class AppTrendsModule { }

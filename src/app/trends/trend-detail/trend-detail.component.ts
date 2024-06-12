@@ -13,10 +13,10 @@ import { selectSelectedTrend } from '../store/selectors';
     <article class="trend__detail" *ngIf="trend$ | async as trend">
       <header class="trend__header">
         <div class="trend__actions">
-          <button type="button" class="trend__action">
+          <button type="button" class="trend__action" (click)="editTrend()">
             <img src="assets/Iconos/Actions/edit.svg" alt="Editar noticia" />
           </button>
-          <button type="button" class="trend__action">
+          <button type="button" class="trend__action" (click)="deleteTrend(trend.id)">
             <img src="assets/Iconos/Actions/delete.svg" alt="Borrar noticia" />
           </button>
         </div>
@@ -34,12 +34,29 @@ import { selectSelectedTrend } from '../store/selectors';
           </p>
         </div>
       </div>
+      <app-modal *ngIf="showModal" [trend]="isEdition ? trend : null" [isEdition]="isEdition" (closeModal)="showModal = false"></app-modal>
+      <app-add-button *ngIf="!showModal" (addTrend)="addTrend()"></app-add-button>
     </article>
   `,
   styleUrls: ['./trend-detail.component.scss'],
 })
 export class TrendDetailComponent {
   protected trend$ = this.store.select(selectSelectedTrend);
+  public showModal: boolean = false;
+  public isEdition: boolean = false;
+  constructor(private store: Store) { }
 
-  constructor(private store: Store) {}
+  public editTrend(): void {
+    this.isEdition = true;
+    this.showModal = !this.showModal;
+  }
+
+  public addTrend(): void {
+    this.isEdition = false;
+    this.showModal = !this.showModal;
+  }
+
+  public deleteTrend(id: string): void {
+    alert(id);
+  }
 }

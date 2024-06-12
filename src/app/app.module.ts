@@ -12,6 +12,7 @@ import { AppPageNotFoundComponent } from './app-page-not-found.component';
 import { AppProgressBarComponent } from './app-progress-bar.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppTrendsModule } from './trends';
+import { ComponentsModule } from './components/components.module';
 import { httpInterceptorProviders } from './app-http-interceptors';
 import { reducers } from './store/reducers';
 
@@ -29,6 +30,7 @@ registerLocaleData(localeEs, 'es');
     AppTrendsModule,
     AppRoutingModule,
     AppLayoutModule,
+    ComponentsModule,
     AppMenuModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([]),
@@ -37,4 +39,4 @@ registerLocaleData(localeEs, 'es');
   providers: [{ provide: LOCALE_ID, useValue: 'es' }, httpInterceptorProviders],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

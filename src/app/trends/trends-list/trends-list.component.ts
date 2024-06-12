@@ -18,13 +18,18 @@ import { selectTrendsByProvider } from '../store/selectors';
         <p class="trend__excerpt">{{ trend.body[0] }}</p>
       </a>
     </article>
+    <app-modal *ngIf="showModal" (closeModal)="showModal = false"></app-modal>
+    <app-add-button *ngIf="!showModal" (addTrend)="showModal = !showModal"></app-add-button>
+    
+
   `,
   styleUrls: ['./trends-list.component.scss'],
 })
 export class TrendsListComponent implements OnInit {
   protected trends$ = this.store.select(selectTrendsByProvider);
+  public showModal: boolean = false;
 
-  constructor(private store: Store) {}
+  constructor(private store: Store) { }
 
   ngOnInit() {
     this.store.dispatch(loadTrends());

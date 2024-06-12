@@ -12,4 +12,4 @@ import { MenuSmallComponent } from './menu-small/menu-small.component';
   imports: [CommonModule, AppLayoutModule, AppRoutingModule],
   exports: [MenuSmallComponent, MenuMediumComponent, MenuLargeComponent],
 })
-export class AppMenuModule {}
+export class AppMenuModule { }
