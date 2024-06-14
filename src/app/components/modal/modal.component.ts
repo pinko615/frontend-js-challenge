@@ -182,14 +182,12 @@ export class ModalComponent implements OnInit {
   editTrend(): void {
     this.store.dispatch(TrendsApiActions.updateTrend({ id: this.id, updateRequest: this.form.value }));
     this.store.dispatch(TrendsApiActions.loadOneTrend({ id: this.id }));
-    this.isEdition = false;
-    this.closeModal.emit(true);
+    this.onCloseModal()
   }
 
   createTrend(): void {
     this.store.dispatch(TrendsApiActions.createTrend({ createRequest: this.form.value }));
-    this.isEdition = false;
-    this.closeModal.emit(true);
+    this.onCloseModal()
     this.router.navigate(['/trends']);
     this.store.dispatch(loadTrends());
   }
