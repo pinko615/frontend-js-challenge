@@ -36,5 +36,41 @@ export class TrendsEffects {
     );
   });
 
-  constructor(private actions$: Actions, private trendService: TrendService) {}
+  deleteTrend$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TrendsApiActions.deleteTrend),
+      mergeMap(({ id }) =>
+        this.trendService.delete(id).pipe(
+          map(() => TrendsApiActions.deleteTrendSuccess({ id })),
+          catchError(() => of(TrendsApiActions.deleteTrendError({ id })))
+        )
+      )
+    );
+  });
+
+  createTrend$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TrendsApiActions.createTrend),
+      mergeMap(({ createRequest }) =>
+        this.trendService.create(createRequest).pipe(
+          map((trend) => TrendsApiActions.createTrendSuccess({ trend })),
+          catchError((error) => of(TrendsApiActions.createTrendError({ error })))
+        )
+      )
+    );
+  });
+
+  updateTrend$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TrendsApiActions.updateTrend),
+      mergeMap(({ id, updateRequest }) =>
+        this.trendService.update(id, updateRequest).pipe(
+          map((trend) => TrendsApiActions.updateTrendSuccess({ trend })),
+          catchError((error) => of(TrendsApiActions.updateTrendError({ error })))
+        )
+      )
+    );
+  });
+
+  constructor(private actions$: Actions, private trendService: TrendService) { }
 }

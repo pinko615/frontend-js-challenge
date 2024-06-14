@@ -1,7 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { TREND_FORM_FIELDS } from 'src/app/constants/trend-form';
-import { FormField } from 'src/app/interfaces/form-field.interface';
+import { Store } from '@ngrx/store';
+import { FormField } from '../../interfaces/form-field.interface';
+import * as TrendsApiActions from '../../trends/store/actions/trends-api.actions';
+import { TREND_FORM_FIELDS } from '../../constants/trend-form';
+import { Router } from '@angular/router';
+import { loadTrends } from 'src/app/trends/store/actions/trends-list-page.actions';
+import { selectSelectedTrend } from 'src/app/trends/store/selectors';
+import { Trend } from 'src/app/trends/models/trend.model';
 
 @Component({
   selector: 'app-modal',
@@ -19,8 +25,8 @@ import { FormField } from 'src/app/interfaces/form-field.interface';
           <div class="form__group" *ngFor="let field of trendFormFields">
             <label>{{ field.label }}</label>
             <ng-container [ngSwitch]="field.type">
-              <input *ngSwitchCase="'text'" type="text" [formControlName]="field.name" />
-              <textarea *ngSwitchCase="'textarea'" [formControlName]="field.name"></textarea>
+              <input *ngSwitchCase="'text'" type="text" [placeholder]="field.placeholder" [formControlName]="field.name" />
+              <textarea *ngSwitchCase="'textarea'" [placeholder]="field.placeholder" [formControlName]="field.name"></textarea>
             </ng-container>
           </div>
         </form>
@@ -55,6 +61,7 @@ import { FormField } from 'src/app/interfaces/form-field.interface';
       display: flex;
       flex-direction: column;
       gap: 72px;
+      overflow: scroll;
     }
 
     .modal__header {
@@ -136,11 +143,16 @@ import { FormField } from 'src/app/interfaces/form-field.interface';
       height: 479px;
     }
 
+    ::placeholder {
+      color: #D8D8D8;
+    }
+
     `
   ]
 })
 export class ModalComponent implements OnInit {
-  @Input() trend: any;
+  @Input() trend: Trend | null = {} as Trend;
+  @Input() id: string = '';
   @Input() isEdition: boolean = false;
   @Output() closeModal: EventEmitter<boolean> = new EventEmitter();
   form: FormGroup = new FormGroup({
@@ -148,11 +160,12 @@ export class ModalComponent implements OnInit {
     provider: new FormControl('', [Validators.required]),
     title: new FormControl('', [Validators.required]),
     body: new FormControl('', [Validators.required]),
+    image: new FormControl('', [Validators.required]),
   })
 
   trendFormFields: FormField[] = TREND_FORM_FIELDS;
-
-  constructor() { }
+  protected trend$ = this.store.select(selectSelectedTrend);
+  constructor(private store: Store, private router: Router) { }
 
   ngOnInit(): void {
     if (!this.trend) return;
@@ -167,11 +180,18 @@ export class ModalComponent implements OnInit {
   }
 
   editTrend(): void {
-    console.log(this.form.value)
+    this.store.dispatch(TrendsApiActions.updateTrend({ id: this.id, updateRequest: this.form.value }));
+    this.store.dispatch(TrendsApiActions.loadOneTrend({ id: this.id }));
+    this.isEdition = false;
+    this.closeModal.emit(true);
   }
 
   createTrend(): void {
-    console.log(this.form.value)
+    this.store.dispatch(TrendsApiActions.createTrend({ createRequest: this.form.value }));
+    this.isEdition = false;
+    this.closeModal.emit(true);
+    this.router.navigate(['/trends']);
+    this.store.dispatch(loadTrends());
   }
 
 }

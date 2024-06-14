@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { selectSelectedTrend } from '../store/selectors';
+import { Router } from '@angular/router';
+import * as TrendsApiActions from '../store/actions/trends-api.actions';
+import { loadTrends } from '../store/actions/trends-list-page.actions';
 
 @Component({
   selector: 'app-trend-detail',
@@ -13,7 +16,7 @@ import { selectSelectedTrend } from '../store/selectors';
     <article class="trend__detail" *ngIf="trend$ | async as trend">
       <header class="trend__header">
         <div class="trend__actions">
-          <button type="button" class="trend__action" (click)="editTrend()">
+          <button type="button" class="trend__action" (click)="editTrend(trend.id)">
             <img src="assets/Iconos/Actions/edit.svg" alt="Editar noticia" />
           </button>
           <button type="button" class="trend__action" (click)="deleteTrend(trend.id)">
@@ -34,7 +37,7 @@ import { selectSelectedTrend } from '../store/selectors';
           </p>
         </div>
       </div>
-      <app-modal *ngIf="showModal" [trend]="isEdition ? trend : null" [isEdition]="isEdition" (closeModal)="showModal = false"></app-modal>
+      <app-modal *ngIf="showModal" [trend]="isEdition ? trend : null" [id]="trendId" [isEdition]="isEdition" (closeModal)="showModal = false"></app-modal>
       <app-add-button *ngIf="!showModal" (addTrend)="addTrend()"></app-add-button>
     </article>
   `,
@@ -44,9 +47,11 @@ export class TrendDetailComponent {
   protected trend$ = this.store.select(selectSelectedTrend);
   public showModal: boolean = false;
   public isEdition: boolean = false;
-  constructor(private store: Store) { }
+  public trendId: string = ''
+  constructor(private store: Store, private router: Router) { }
 
-  public editTrend(): void {
+  public editTrend(id: string): void {
+    this.trendId = id;
     this.isEdition = true;
     this.showModal = !this.showModal;
   }
@@ -57,6 +62,7 @@ export class TrendDetailComponent {
   }
 
   public deleteTrend(id: string): void {
-    alert(id);
+    this.store.dispatch(TrendsApiActions.deleteTrend({ id }))
+    this.router.navigate(['/trends']);
   }
 }

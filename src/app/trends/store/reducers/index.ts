@@ -14,6 +14,9 @@ export const adapter: EntityAdapter<Trend> = createEntityAdapter<Trend>();
 
 export const initialState: State = adapter.getInitialState({
   selectedTrend: null,
+  trends: [],
+  loading: false,
+  error: null
 });
 
 export const trendsReducer = createReducer(
@@ -32,7 +35,36 @@ export const trendsReducer = createReducer(
   ),
   on(TrendsApiActions.loadOneTrendError, (state): State => {
     return { ...state, selectedTrend: null };
-  })
+  }),
+  on(TrendsApiActions.createTrend, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(TrendsApiActions.createTrendSuccess, (state, { trend }) => {
+    return adapter.addOne(trend, { ...state, loading: false });
+  }),
+  on(TrendsApiActions.createTrendError, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error: error.message
+  })),
+  on(TrendsApiActions.updateTrend, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+  on(TrendsApiActions.updateTrendSuccess, (state, { trend }) => {
+    return adapter.updateOne(
+      { id: trend.id, changes: trend },
+      { ...state, loading: false }
+    );
+  }),
+  on(TrendsApiActions.updateTrendError, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error: error.message
+  }))
 );
 
 export const selectSelectedTrend = (state: State) => state.selectedTrend;
